@@ -1,61 +1,52 @@
-// ======================================
-// SISTEMA DE AUTOMATIZACIÓN DE INSPECCIONES
-// Lógica principal de funcionamiento
-// ======================================
+// ==============================================
+// AUTOMATIZACIÓN DE INSPECCIONES
+// Conexión preparada para Microsoft Lists
+// ==============================================
 
 
-// Base de datos local inicial
+// URL DEL FLUJO POWER AUTOMATE
+// Este flujo será el intermediario hacia Microsoft Lists
 
-let inspecciones = JSON.parse(localStorage.getItem("inspecciones")) || [];
-
-let inspeccionActual = null;
-
+const API_URL = "URL_POWER_AUTOMATE_AQUI";
 
 
-// ======================================
+// almacenamiento temporal de la sesión
+
+let inspecciones = [];
+
+let inspeccionSeleccionada = null;
+
+
+
+// ==============================================
 // CREAR INSPECCIÓN
-// ======================================
-
-function crearInspeccion(){
+// ==============================================
 
 
-    let area = document.getElementById("area").value;
-    let inspector = document.getElementById("inspector").value;
-    let fecha = document.getElementById("fecha").value;
-    let tipo = document.getElementById("tipo").value;
+async function crearInspeccion(){
 
 
-
-    if(area === "" || inspector === "" || fecha === ""){
-
-        mostrarNotificacion(
-            "Complete todos los campos obligatorios"
-        );
-
-        return;
-
-    }
+    const inspeccion = {
 
 
-
-    let nuevaInspeccion = {
-
-
-        id: Date.now(),
-
-        area:area,
-
-        inspector:inspector,
-
-        fecha:fecha,
-
-        tipo:tipo,
+        area:
+        document.getElementById("area").value,
 
 
-        estado:"Pendiente",
+        inspector:
+        document.getElementById("inspector").value,
 
 
-        checklist:[],
+        fecha:
+        document.getElementById("fecha").value,
+
+
+        tipo:
+        document.getElementById("tipo").value,
+
+
+        estado:
+        "Pendiente",
 
 
         hallazgo:
@@ -78,32 +69,71 @@ function crearInspeccion(){
         document.getElementById("observaciones").value,
 
 
-        evidencias:0,
+        checklist:
+        obtenerChecklist(),
 
 
-        fechaCreacion:new Date().toLocaleString()
+        fechaRegistro:
+        new Date().toISOString()
 
     };
 
 
 
-
-    // Capturar checklist
-
-
-    let criterios =
-    document.querySelectorAll(".criterio");
+    if(!inspeccion.area ||
+       !inspeccion.inspector){
 
 
+        mostrarNotificacion(
+        "Complete los campos obligatorios"
+        );
 
-    criterios.forEach(item=>{
+        return;
+
+    }
 
 
-        nuevaInspeccion.checklist.push({
 
-            criterio:item.parentElement.innerText,
+    await enviarMicrosoftLists(inspeccion);
 
-            cumplimiento:item.checked
+
+
+}
+
+
+
+
+
+// ==============================================
+// OBTENER CHECKLIST
+// ==============================================
+
+
+function obtenerChecklist(){
+
+
+    let lista=[];
+
+
+    document
+    .querySelectorAll(".criterio")
+    .forEach(item=>{
+
+
+        lista.push({
+
+
+            criterio:
+            item.parentElement.innerText,
+
+
+            resultado:
+            item.checked
+            ?
+            "Cumple"
+            :
+            "No cumple"
+
 
         });
 
@@ -112,30 +142,7 @@ function crearInspeccion(){
 
 
 
-
-    inspecciones.push(nuevaInspeccion);
-
-
-
-    guardarDatos();
-
-
-
-    cargarTabla();
-
-
-
-    actualizarIndicadores();
-
-
-
-    limpiarFormulario();
-
-
-
-    mostrarNotificacion(
-        "Inspección creada correctamente"
-    );
+    return lista;
 
 
 }
@@ -144,85 +151,138 @@ function crearInspeccion(){
 
 
 
-// ======================================
-// GUARDAR DATOS LOCAL STORAGE
-// ======================================
+
+// ==============================================
+// ENVIAR DATOS A MICROSOFT LISTS
+// MEDIANTE POWER AUTOMATE
+// ==============================================
 
 
-function guardarDatos(){
-
-    localStorage.setItem(
-        "inspecciones",
-        JSON.stringify(inspecciones)
-    );
-
-}
+async function enviarMicrosoftLists(datos){
 
 
 
+try{
 
 
-// ======================================
-// MOSTRAR TABLA
-// ======================================
+    const respuesta =
+    await fetch(API_URL,{
 
 
-function cargarTabla(){
+        method:"POST",
 
 
-    let tabla =
-    document.getElementById(
-        "tablaInspecciones"
-    );
+        headers:{
 
 
-
-    tabla.innerHTML="";
-
-
-
-    inspecciones.forEach(ins=>{
+            "Content-Type":
+            "application/json"
 
 
-        let fila=document.createElement("tr");
+        },
 
 
-
-        fila.innerHTML=`
-
-        <td>${ins.id}</td>
-
-        <td>${ins.area}</td>
-
-        <td>${ins.inspector}</td>
-
-        <td>${ins.fecha}</td>
-
-        <td>${ins.tipo}</td>
-
-
-        <td>
-
-        <button onclick="verDetalle(${ins.id})">
-
-        ${ins.estado}
-
-        </button>
-
-
-        </td>
-
-        `;
-
-
-
-        tabla.appendChild(fila);
+        body:
+        JSON.stringify(datos)
 
 
     });
 
 
 
+    if(respuesta.ok){
+
+
+        mostrarNotificacion(
+        "Inspección registrada correctamente"
+        );
+
+
+        limpiarFormulario();
+
+
+
+    }
+
+
+    else{
+
+
+        mostrarNotificacion(
+        "Error al registrar información"
+        );
+
+
+    }
+
+
+
+}
+
+catch(error){
+
+
+console.error(error);
+
+
+mostrarNotificacion(
+"Error de conexión"
+);
+
+
+}
+
+
+
+}
+
+
+
+
+
+// ==============================================
+// CONSULTAR INSPECCIONES
+// Microsoft Lists
+// ==============================================
+
+
+async function cargarInspecciones(){
+
+
+try{
+
+
+const respuesta =
+await fetch(API_URL);
+
+
+
+inspecciones =
+await respuesta.json();
+
+
+
+mostrarTabla();
+
+
+
+actualizarIndicadores();
+
+
+
+}
+
+
+catch(error){
+
+
+console.error(error);
+
+
+}
+
+
+
 }
 
 
@@ -230,196 +290,141 @@ function cargarTabla(){
 
 
 
-// ======================================
-// DETALLE INSPECCIÓN
-// ======================================
+// ==============================================
+// MOSTRAR TABLA
+// ==============================================
+
+
+function mostrarTabla(){
+
+
+const tabla =
+document.getElementById(
+"tablaInspecciones"
+);
+
+
+
+tabla.innerHTML="";
+
+
+
+inspecciones.forEach(item=>{
+
+
+tabla.innerHTML += `
+
+
+<tr>
+
+
+<td>
+${item.ID}
+</td>
+
+
+<td>
+${item.Area}
+</td>
+
+
+<td>
+${item.Inspector}
+</td>
+
+
+<td>
+${item.Fecha}
+</td>
+
+
+<td>
+${item.Tipo}
+</td>
+
+
+<td>
+
+
+<button onclick="verDetalle(${item.ID})">
+
+${item.Estado}
+
+</button>
+
+
+</td>
+
+
+
+</tr>
+
+
+`;
+
+
+});
+
+
+}
+
+
+
+
+
+
+// ==============================================
+// DETALLE DE INSPECCIÓN
+// ==============================================
 
 
 function verDetalle(id){
 
 
-    let inspeccion =
-    inspecciones.find(
-        x=>x.id===id
-    );
+inspeccionSeleccionada =
+inspecciones.find(
+x=>x.ID===id
+);
 
 
 
-    inspeccionActual=id;
+document.getElementById(
+"modalDetalle"
+)
+.style.display="flex";
 
 
 
-    let contenido =
-    document.getElementById(
-        "detalleContenido"
-    );
+document.getElementById(
+"detalleContenido"
+)
+.innerHTML=`
 
 
+<h3>
+${inspeccionSeleccionada.Area}
+</h3>
 
-    contenido.innerHTML=`
 
+<p>
+Inspector:
+${inspeccionSeleccionada.Inspector}
+</p>
 
-    <h3>
-    Área:
-    ${inspeccion.area}
-    </h3>
 
+<p>
+Estado:
+${inspeccionSeleccionada.Estado}
+</p>
 
-    <p>
-    Inspector:
-    ${inspeccion.inspector}
-    </p>
 
+<p>
+Hallazgo:
+${inspeccionSeleccionada.Hallazgo}
+</p>
 
-    <p>
-    Tipo:
-    ${inspeccion.tipo}
-    </p>
 
-
-    <p>
-    Estado:
-    ${inspeccion.estado}
-    </p>
-
-
-
-    <h4>
-    Checklist
-    </h4>
-
-
-    ${
-
-    inspeccion.checklist.map(c=>`
-
-    <p>
-    ${c.criterio}
-    :
-    ${c.cumplimiento ? "✔ Cumple":"✘ No cumple"}
-
-    </p>
-
-    `).join("")
-
-    }
-
-
-
-    <button onclick="cerrarInspeccion()">
-
-    Cerrar Inspección
-
-    </button>
-
-
-    `;
-
-
-
-    document.getElementById(
-        "modalDetalle"
-    ).style.display="flex";
-
-
-}
-
-
-
-
-
-// ======================================
-// CERRAR INSPECCIÓN
-// ======================================
-
-
-function cerrarInspeccion(){
-
-
-    let inspeccion =
-    inspecciones.find(
-        x=>x.id===inspeccionActual
-    );
-
-
-
-    if(inspeccion){
-
-
-        inspeccion.estado="Completada";
-
-
-        guardarDatos();
-
-
-        cargarTabla();
-
-
-        actualizarIndicadores();
-
-
-        cerrarModal();
-
-
-        mostrarNotificacion(
-            "Inspección cerrada"
-        );
-
-
-    }
-
-
-}
-
-
-
-
-
-
-// ======================================
-// FINALIZAR INSPECCIÓN
-// ======================================
-
-
-function finalizarInspeccion(){
-
-
-    let criterios =
-    document.querySelectorAll(".criterio");
-
-
-
-    let completos=0;
-
-
-
-    criterios.forEach(c=>{
-
-        if(c.checked){
-
-            completos++;
-
-        }
-
-    });
-
-
-
-    if(completos===criterios.length){
-
-        mostrarNotificacion(
-            "Checklist completo"
-        );
-
-    }
-
-    else{
-
-        mostrarNotificacion(
-            "Hay criterios pendientes"
-        );
-
-    }
+`;
 
 
 
@@ -430,77 +435,100 @@ function finalizarInspeccion(){
 
 
 
-// ======================================
-// INDICADORES
-// ======================================
+// ==============================================
+// ACTUALIZAR ESTADO
+// ==============================================
+
+
+async function actualizarEstado(id,estado){
+
+
+
+let datos={
+
+
+ID:id,
+
+
+Estado:estado
+
+
+};
+
+
+
+await enviarMicrosoftLists(datos);
+
+
+
+}
+
+
+
+
+
+
+// ==============================================
+// INDICADORES BÁSICOS
+// ==============================================
 
 
 function actualizarIndicadores(){
 
 
-
-    let total =
-    inspecciones.length;
-
-
-
-    let completas =
-    inspecciones.filter(
-        x=>x.estado==="Completada"
-    ).length;
+let total =
+inspecciones.length;
 
 
 
-    let pendientes =
-    total-completas;
+let completas =
+inspecciones.filter(
+x=>x.Estado==="Completada"
+).length;
 
 
 
-    let porcentaje =
-    total>0
-    ?
-    Math.round(
-        (completas/total)*100
-    )
-    :
-    0;
+let pendientes =
+total-completas;
 
 
 
-    document.getElementById(
-        "totalInspecciones"
-    ).innerText=total;
+let porcentaje =
+total>0
+?
+Math.round(
+(completas/total)*100
+)
+:
+0;
 
 
 
-    document.getElementById(
-        "inspeccionesCompletadas"
-    ).innerText=completas;
+document.getElementById(
+"totalInspecciones"
+)
+.innerHTML=total;
 
 
 
-    document.getElementById(
-        "inspeccionesPendientes"
-    ).innerText=pendientes;
+document.getElementById(
+"inspeccionesCompletadas"
+)
+.innerHTML=completas;
 
 
 
-    document.getElementById(
-        "porcentajeCumplimiento"
-    ).innerText=porcentaje+"%";
+document.getElementById(
+"inspeccionesPendientes"
+)
+.innerHTML=pendientes;
 
 
 
-    document.getElementById(
-        "textoCumplimiento"
-    ).innerText=porcentaje+"%";
-
-
-
-    document.getElementById(
-        "barraCumplimiento"
-    ).style.width=porcentaje+"%";
-
+document.getElementById(
+"porcentajeCumplimiento"
+)
+.innerHTML=porcentaje+"%";
 
 
 }
@@ -509,114 +537,37 @@ function actualizarIndicadores(){
 
 
 
-// ======================================
-// EXPORTAR A EXCEL CSV
-// ======================================
 
-
-function exportarExcel(){
-
-
-    let csv =
-    "ID,Area,Inspector,Fecha,Tipo,Estado\n";
-
-
-
-    inspecciones.forEach(i=>{
-
-
-        csv +=
-        `${i.id},${i.area},${i.inspector},${i.fecha},${i.tipo},${i.estado}\n`;
-
-
-    });
-
-
-
-    let blob =
-    new Blob(
-        [csv],
-        {
-            type:"text/csv"
-        }
-    );
-
-
-
-    let url =
-    URL.createObjectURL(blob);
-
-
-
-    let enlace =
-    document.createElement("a");
-
-
-
-    enlace.href=url;
-
-
-    enlace.download=
-    "inspecciones.csv";
-
-
-
-    enlace.click();
-
-
-}
-
-
-
-
-
-// ======================================
-// REPORTE SIMPLE
-// ======================================
-
-
-function generarReporte(){
-
-
-    alert(
-
-    "Reporte generado con "+
-    inspecciones.length+
-    " inspecciones registradas"
-
-    );
-
-
-}
-
-
-
-
-
-
-// ======================================
+// ==============================================
 // LIMPIAR FORMULARIO
-// ======================================
+// ==============================================
 
 
 function limpiarFormulario(){
 
 
-document.getElementById("area").value="";
 
-document.getElementById("inspector").value="";
+document
+.querySelectorAll(
+"input,textarea"
+)
+.forEach(e=>{
 
-document.getElementById("fecha").value="";
+e.value="";
 
-document.getElementById("hallazgo").value="";
-
-document.getElementById("responsable").value="";
-
-document.getElementById("observaciones").value="";
+});
 
 
-document.querySelectorAll(".criterio")
-.forEach(c=>c.checked=false);
+
+document
+.querySelectorAll(
+".criterio"
+)
+.forEach(e=>{
+
+e.checked=false;
+
+});
 
 
 
@@ -627,17 +578,75 @@ document.querySelectorAll(".criterio")
 
 
 
+// ==============================================
+// EXPORTACIÓN SIMPLE
+// (Mientras no se conecta Excel)
+// ==============================================
 
-// ======================================
+
+function exportarExcel(){
+
+
+let datos =
+JSON.stringify(
+inspecciones,
+null,
+2
+);
+
+
+
+let archivo =
+new Blob(
+[datos],
+{
+type:"application/json"
+}
+);
+
+
+
+let url =
+URL.createObjectURL(
+archivo
+);
+
+
+
+let link =
+document.createElement("a");
+
+
+
+link.href=url;
+
+
+link.download=
+"Inspecciones_Historico.json";
+
+
+link.click();
+
+
+}
+
+
+
+
+
+
+// ==============================================
 // MODAL
-// ======================================
+// ==============================================
 
 
 function cerrarModal(){
 
+
 document.getElementById(
 "modalDetalle"
-).style.display="none";
+)
+.style.display="none";
 
 
 }
@@ -647,10 +656,9 @@ document.getElementById(
 
 
 
-
-// ======================================
+// ==============================================
 // NOTIFICACIONES
-// ======================================
+// ==============================================
 
 
 function mostrarNotificacion(texto){
@@ -663,7 +671,7 @@ document.getElementById(
 
 
 
-caja.innerText=texto;
+caja.innerHTML=texto;
 
 
 caja.style.display="block";
@@ -686,18 +694,15 @@ caja.style.display="none";
 
 
 
-
-// ======================================
-// CARGA INICIAL
-// ======================================
+// ==============================================
+// INICIO
+// ==============================================
 
 
 window.onload=function(){
 
 
-    cargarTabla();
-
-    actualizarIndicadores();
+cargarInspecciones();
 
 
 };
