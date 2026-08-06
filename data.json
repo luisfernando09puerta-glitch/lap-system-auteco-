@@ -1,0 +1,266 @@
+{
+    "configuracion": {
+
+        "nombreSistema": "Automatización de Inspecciones",
+
+        "version": "1.0",
+
+        "empresa": "ATC",
+
+        "año": 2026,
+
+        "estado": "Activo"
+
+    },
+
+
+    "areas": [
+
+        {
+            "id":1,
+            "nombre":"Producción"
+        },
+
+        {
+            "id":2,
+            "nombre":"Almacén"
+        },
+
+        {
+            "id":3,
+            "nombre":"Mantenimiento"
+        },
+
+        {
+            "id":4,
+            "nombre":"Logística"
+        }
+
+    ],
+
+
+    "tiposInspeccion":[
+
+        {
+            "id":1,
+            "nombre":"Ambiental"
+        },
+
+        {
+            "id":2,
+            "nombre":"Seguridad"
+        },
+
+        {
+            "id":3,
+            "nombre":"Calidad"
+        }
+
+    ],
+
+
+    "criteriosChecklist":[
+
+
+        {
+            "id":1,
+
+            "criterio":
+            "Orden y limpieza del área",
+
+            "categoria":
+            "Condiciones locativas",
+
+            "activo":true
+
+        },
+
+
+        {
+            "id":2,
+
+            "criterio":
+            "Clasificación adecuada de residuos",
+
+            "categoria":
+            "Ambiental",
+
+            "activo":true
+
+        },
+
+
+        {
+            "id":3,
+
+            "criterio":
+            "Estado de puntos ecológicos",
+
+            "categoria":
+            "Gestión ambiental",
+
+            "activo":true
+
+        },
+
+
+        {
+            "id":4,
+
+            "criterio":
+            "Uso correcto de elementos de protección",
+
+            "categoria":
+            "Seguridad",
+
+            "activo":true
+
+        },
+
+
+        {
+            "id":5,
+
+            "criterio":
+            "Condiciones locativas adecuadas",
+
+            "categoria":
+            "Infraestructura",
+
+            "activo":true
+
+        },
+
+
+        {
+            "id":6,
+
+            "criterio":
+            "Señalización del área",
+
+            "categoria":
+            "Seguridad",
+
+            "activo":true
+
+        }
+
+    ],
+
+
+
+    "prioridades":[
+
+        {
+            "id":1,
+            "nombre":"Baja"
+        },
+
+        {
+            "id":2,
+            "nombre":"Media"
+        },
+
+        {
+            "id":3,
+            "nombre":"Alta"
+        },
+
+        {
+            "id":4,
+            "nombre":"Crítica"
+        }
+
+    ],
+
+
+
+    "estados":[
+
+        {
+            "id":1,
+            "nombre":"Pendiente"
+        },
+
+        {
+            "id":2,
+            "nombre":"En proceso"
+        },
+
+        {
+            "id":3,
+            "nombre":"Completada"
+        },
+
+        {
+            "id":4,
+            "nombre":"Cerrada"
+        }
+
+    ],
+
+
+
+    "inspecciones":[
+
+        {
+
+            "id":1001,
+
+            "area":"Producción",
+
+            "inspector":"Usuario Demo",
+
+            "fecha":"2026-08-06",
+
+            "tipo":"Ambiental",
+
+            "estado":"Pendiente",
+
+
+            "checklist":[
+
+                {
+                    "criterio":
+                    "Orden y limpieza del área",
+
+                    "cumplimiento":false
+                },
+
+
+                {
+                    "criterio":
+                    "Clasificación adecuada de residuos",
+
+                    "cumplimiento":false
+                },
+
+
+                {
+                    "criterio":
+                    "Estado de puntos ecológicos",
+
+                    "cumplimiento":false
+                }
+
+            ],
+
+
+
+            "hallazgo":"",
+
+            "prioridad":"Baja",
+
+            "responsable":"",
+
+            "fechaCompromiso":"",
+
+            "observaciones":"",
+
+            "evidencias":0
+
+        }
+
+    ]
+
+}
