@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Automatización de Inspecciones</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="header-container">
+
+        <div>
+            <h1>Automatización de Inspecciones</h1>
+            <p>Gestión digital de inspecciones ambientales y operativas</p>
+        </div>
+
+        <div class="logo">
+            <span>ATC</span>
+        </div>
+
+    </div>
+</header>
+
+
+<main>
+
+<section class="dashboard">
+
+    <div class="card">
+        <h3>Total Inspecciones</h3>
+        <p id="totalInspecciones">0</p>
+    </div>
+
+
+    <div class="card">
+        <h3>Completadas</h3>
+        <p id="inspeccionesCompletadas">0</p>
+    </div>
+
+
+    <div class="card">
+        <h3>Pendientes</h3>
+        <p id="inspeccionesPendientes">0</p>
+    </div>
+
+
+    <div class="card">
+        <h3>Cumplimiento</h3>
+        <p id="porcentajeCumplimiento">0%</p>
+    </div>
+
+</section>
+
+
+
+<section class="formulario">
+
+<h2>Nueva Inspección</h2>
+
+
+<div class="form-grid">
+
+
+<div class="campo">
+<label>Área</label>
+
+<select id="area">
+
+<option value="">
+Seleccione área
+</option>
+
+<option>
+Producción
+</option>
+
+<option>
+Almacén
+</option>
+
+<option>
+Mantenimiento
+</option>
+
+<option>
+Logística
+</option>
+
+</select>
+
+</div>
+
+
+
+<div class="campo">
+
+<label>Inspector</label>
+
+<input 
+type="text"
+id="inspector"
+placeholder="Nombre del inspector">
+
+</div>
+
+
+
+<div class="campo">
+
+<label>Fecha</label>
+
+<input 
+type="date"
+id="fecha">
+
+</div>
+
+
+
+<div class="campo">
+
+<label>Tipo de inspección</label>
+
+<select id="tipo">
+
+<option>
+Ambiental
+</option>
+
+<option>
+Seguridad
+</option>
+
+<option>
+Calidad
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+
+<button onclick="crearInspeccion()">
+Guardar Inspección
+</button>
+
+
+</section>
+
+
+<section class="tabla">
+
+<h2>Registro de Inspecciones</h2>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+ID
+</th>
+
+<th>
+Área
+</th>
+
+<th>
+Inspector
+</th>
+
+<th>
+Fecha
+</th>
+
+<th>
+Tipo
+</th>
+
+<th>
+Estado
+</th>
+
+
+</tr>
+
+</thead>
+
+
+<tbody id="tablaInspecciones">
+
+
+</tbody>
+
+
+</table>
+
+
+</section>
+
+
+</main>
+
+
+<script src="script.js"></script>
+
+
+</body>
+</html>
+<!-- SECCIÓN CHECKLIST DE INSPECCIÓN -->
+
+<section class="checklist">
+
+<h2>Checklist de Inspección</h2>
+
+
+<div class="check-grid">
+
+
+<div class="check-item">
+
+<label>
+<input 
+type="checkbox"
+class="criterio">
+
+Orden y limpieza del área
+</label>
+
+</div>
+
+
+
+<div class="check-item">
+
+<label>
+
+<input 
+type="checkbox"
+class="criterio">
+
+Clasificación adecuada de residuos
+
+</label>
+
+</div>
+
+
+
+<div class="check-item">
+
+<label>
+
+<input 
+type="checkbox"
+class="criterio">
+
+Estado de puntos ecológicos
+
+</label>
+
+</div>
+
+
+
+<div class="check-item">
+
+<label>
+
+<input 
+type="checkbox"
+class="criterio">
+
+Uso correcto de elementos de protección
+
+</label>
+
+</div>
+
+
+
+<div class="check-item">
+
+<label>
+
+<input 
+type="checkbox"
+class="criterio">
+
+Condiciones locativas adecuadas
+
+</label>
+
+</div>
+
+
+
+<div class="check-item">
+
+<label>
+
+<input 
+type="checkbox"
+class="criterio">
+
+Señalización del área
+
+</label>
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+<!-- HALLAZGOS -->
+
+
+<section class="hallazgos">
+
+
+<h2>Registro de Hallazgos</h2>
+
+
+<div class="form-grid">
+
+
+<div class="campo">
+
+<label>
+Descripción del hallazgo
+</label>
+
+
+<textarea 
+id="hallazgo"
+placeholder="Describa la condición encontrada">
+</textarea>
+
+
+</div>
+
+
+
+<div class="campo">
+
+
+<label>
+Nivel de prioridad
+</label>
+
+
+<select id="prioridad">
+
+
+<option>
+Baja
+</option>
+
+
+<option>
+Media
+</option>
+
+
+<option>
+Alta
+</option>
+
+
+<option>
+Crítica
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+<div class="campo">
+
+
+<label>
+Responsable asignado
+</label>
+
+
+<input 
+type="text"
+id="responsable"
+placeholder="Responsable del cierre">
+
+
+</div>
+
+
+
+<div class="campo">
+
+
+<label>
+Fecha compromiso
+</label>
+
+
+<input 
+type="date"
+id="fechaCompromiso">
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+<!-- EVIDENCIAS -->
+
+
+<section class="evidencias">
+
+
+<h2>Evidencias</h2>
+
+
+<div class="form-grid">
+
+
+<div class="campo">
+
+
+<label>
+Fotografía evidencia
+</label>
+
+
+<input 
+type="file"
+id="imagen"
+accept="image/*">
+
+
+</div>
+
+
+
+<div class="campo">
+
+
+<label>
+Observaciones adicionales
+</label>
+
+
+<textarea 
+id="observaciones"
+placeholder="Ingrese comentarios adicionales">
+</textarea>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<!-- SEGUIMIENTO -->
+
+
+<section class="seguimiento">
+
+
+<h2>Seguimiento de Acciones</h2>
+
+
+<table>
+
+
+<thead>
+
+<tr>
+
+<th>
+Hallazgo
+</th>
+
+
+<th>
+Responsable
+</th>
+
+
+<th>
+Estado
+</th>
+
+
+<th>
+Fecha cierre
+</th>
+
+
+<th>
+Acción
+</th>
+
+
+</tr>
+
+</thead>
+
+
+
+<tbody id="tablaSeguimiento">
+
+
+</tbody>
+
+
+
+</table>
+
+
+</section>
+
+
+
+
+<!-- BOTÓN FINAL -->
+
+
+<section class="acciones">
+
+
+<button 
+class="btn-final"
+onclick="finalizarInspeccion()">
+
+Finalizar Inspección
+
+</button>
+
+
+</section>
+<!-- MODAL DETALLE DE INSPECCIÓN -->
+
+<div id="modalDetalle" class="modal">
+
+
+<div class="modal-contenido">
+
+
+<span 
+class="cerrar"
+onclick="cerrarModal()">
+&times;
+</span>
+
+
+
+<h2>
+Detalle de Inspección
+</h2>
+
+
+
+<div id="detalleContenido">
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- PANEL DE INDICADORES -->
+
+
+<section class="indicadores">
+
+
+<h2>
+Indicadores de Gestión
+</h2>
+
+
+
+<div class="indicadores-grid">
+
+
+<div class="indicador">
+
+<h3>
+Cumplimiento General
+</h3>
+
+<div class="barra">
+
+<div 
+id="barraCumplimiento"
+class="progreso">
+
+</div>
+
+</div>
+
+
+<p id="textoCumplimiento">
+0%
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="indicador">
+
+
+<h3>
+Hallazgos Abiertos
+</h3>
+
+
+<p id="hallazgosAbiertos">
+0
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="indicador">
+
+
+<h3>
+Acciones Cerradas
+</h3>
+
+
+<p id="accionesCerradas">
+0
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<!-- EXPORTACIÓN -->
+
+
+<section class="exportar">
+
+
+<h2>
+Gestión de Información
+</h2>
+
+
+
+<button onclick="exportarExcel()">
+
+Exportar Registro
+
+</button>
+
+
+
+<button onclick="generarReporte()">
+
+Generar Reporte
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+<!-- NOTIFICACIONES -->
+
+
+<div 
+id="notificacion"
+class="notificacion">
+
+
+</div>
+
+
+
+
+
+<footer>
+
+
+<p>
+Sistema de Automatización de Inspecciones © 2026
+</p>
+
+
+</footer>
+
+
+
+
+</main>
+
+
+
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
